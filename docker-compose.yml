@@ -5,7 +5,7 @@ services:
     build:
       context: ./config/front
       dockerfile: Dockerfile
-    container_name: frontend
+    container_name: ${PROJECT_NAME}-frontend
     hostname: frontend
     working_dir: /app
     environment:
@@ -22,7 +22,7 @@ services:
 
   backend:
     image: mcr.microsoft.com/dotnet/sdk:8.0
-    container_name: backend
+    container_name: ${PROJECT_NAME}-backend
     working_dir: /app
     ports:
       - "5119:5119"
@@ -38,7 +38,7 @@ services:
 
   postgres:
     image: postgres
-    container_name: postgres
+    container_name: ${PROJECT_NAME}-postgres
     restart: always
     ports:
       - "5432:5432"
@@ -52,7 +52,7 @@ services:
 
   pgadmin:
     image: dpage/pgadmin4
-    container_name: pgadmin
+    container_name: ${PROJECT_NAME}-pgadmin
     restart: always
     ports:
       - "8888:80"
