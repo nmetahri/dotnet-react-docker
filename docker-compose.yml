@@ -21,7 +21,7 @@ services:
     command: bash -c "pnpm install && pnpm run dev"
 
   backend:
-    image: mcr.microsoft.com/dotnet/sdk:8.0
+    image: mcr.microsoft.com/dotnet/sdk:9.0
     container_name: ${PROJECT_NAME}-backend
     working_dir: /app
     ports:
