@@ -1,0 +1,73 @@
+version: '3.9'
+
+services:
+  frontend:
+    build:
+      context: ./config/front
+      dockerfile: Dockerfile
+    container_name: frontend
+    hostname: frontend
+    working_dir: /app
+    environment:
+      - WDS_SOCKET_HOST=127.0.0.1
+      - CHOKIDAR_USEPOLLING=true
+      - WATCHPACK_POLLING=true
+    restart: always
+    network_mode: host
+    volumes:
+      - ${FRONTEND_PATH}:/app
+    depends_on:
+      - backend
+    command: bash -c "pnpm install && pnpm run dev"
+
+  backend:
+    image: mcr.microsoft.com/dotnet/sdk:8.0
+    container_name: backend
+    working_dir: /app
+    ports:
+      - "5119:5119"
+    environment:
+      - AppSettings__SQLConnectionString=${SQL_CONNECTION_STRING}
+    depends_on:
+      - postgres
+    networks:
+      - app-network
+    volumes:
+      - ${BACKEND_PATH}:/app
+    command: bash -c "dotnet restore && cd /app/${BACKEND_WEBAPI_DIRECTORY} && dotnet build --configuration Release && dotnet run --configuration Release"
+
+  postgres:
+    image: postgres
+    container_name: postgres
+    restart: always
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: database
+      POSTGRES_PASSWORD: database
+    networks:
+      - app-network
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: pgadmin
+    restart: always
+    ports:
+      - "8888:80"
+    environment:
+      PGADMIN_DEFAULT_EMAIL: database@database.com
+      PGADMIN_DEFAULT_PASSWORD: database
+    networks:
+      - app-network
+    volumes:
+      - pgadmin-data:/var/lib/pgadmin
+
+networks:
+  app-network:
+    driver: bridge
+
+volumes:
+  postgres-data:
+  pgadmin-data:
