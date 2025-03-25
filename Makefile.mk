@@ -34,6 +34,14 @@ exaback: ## Enter the container with root user.
 	@echo "\n==> Entering backend container ..."
 	$(DC) exec -it --user=root backend /bin/bash
 
+back-logs: ## Show the logs of the backend container.
+	@echo "\n==> Showing backend logs ..."
+	$(DC) logs -f backend
+
+front-logs: ## Show the logs of the frontend container.
+	@echo "\n==> Showing frontend logs ..."
+	$(DC) logs -f frontend
+
 check-env-vars:
 	@echo "Checking if required environment variables are set..."
 	@$(foreach var,$(REQUIRED_ENV_VARS),\
